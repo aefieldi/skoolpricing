@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skool Revenue Model Calculator – Visibility by Design</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Lato', sans-serif;
+    background: #FAF8FF;
+    color: #3A2A50;
+    min-height: 100vh;
+    padding: 0;
+  }
+  .app { max-width: 780px; margin: 0 auto; padding: 2rem 1rem 3rem; }
+  .screen { display: none; animation: fadeIn 0.45s ease; }
+  .screen.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  .logo-bar {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  .logo-bar .eyebrow {
+    font-family: 'Lato', sans-serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #9B7EC8;
+    margin-bottom: 6px;
+  }
+  h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    color: #5B3A7E;
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+  .subtitle {
+    font-size: 15px;
+    color: #7A5FA0;
+    margin-top: 4px;
+  }
+  h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    font-size: clamp(1.2rem, 3vw, 1.5rem);
+    color: #5B3A7E;
+    margin-bottom: 6px;
+  }
+  h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: #5B3A7E;
+    margin-bottom: 10px;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 1.75rem;
+    border: 1.5px solid #E8DFF5;
+    margin-bottom: 1.25rem;
+  }
+  .card-lavender {
+    background: #F3EEFF;
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 1.5px solid #D5C4F0;
+    margin-bottom: 1.25rem;
+  }
+  .card-blush {
+    background: #FFF2EE;
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 1.5px solid #F5D5CB;
+    margin-bottom: 1.25rem;
+  }
+
+  label {
+    font-family: 'Lato', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: #5B3A7E;
+    display: block;
+    margin-bottom: 6px;
+  }
+  .label-hint { font-weight: 400; color: #9B7EC8; font-size: 12px; margin-left: 4px; }
+
+  .form-group { margin-bottom: 1.25rem; }
+
+  input[type="number"] {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid #D5C4F0;
+    border-radius: 10px;
+    font-family: 'Lato', sans-serif;
+    font-size: 16px;
+    color: #3A2A50;
+    background: #FAF8FF;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input[type="number"]:focus { border-color: #9B7EC8; background: #fff; }
+  input[type="number"].error { border-color: #E85A7A; }
+
+  .slider-row { display: flex; align-items: center; gap: 14px; }
+  input[type="range"] {
+    flex: 1;
+    height: 6px;
+    accent-color: #9B7EC8;
+    cursor: pointer;
+  }
+  .slider-val {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    font-size: 18px;
+    color: #5B3A7E;
+    min-width: 32px;
+    text-align: right;
+  }
+
+  .radio-group { display: flex; flex-wrap: wrap; gap: 10px; }
+  .radio-option {
+    flex: 1;
+    min-width: 140px;
+    cursor: pointer;
+  }
+  .radio-option input[type="radio"] { display: none; }
+  .radio-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 14px;
+    border: 2px solid #D5C4F0;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #7A5FA0;
+    background: #FAF8FF;
+    cursor: pointer;
+    transition: all 0.18s;
+    user-select: none;
+  }
+  .radio-option input[type="radio"]:checked + .radio-label {
+    border-color: #9B7EC8;
+    background: #F3EEFF;
+    color: #5B3A7E;
+  }
+
+  .btn-primary {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #9B7EC8 0%, #7A5FA0 100%);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    font-size: 16px;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: opacity 0.2s, transform 0.1s;
+    margin-top: 1.5rem;
+  }
+  .btn-primary:hover { opacity: 0.92; transform: translateY(-1px); }
+  .btn-primary:active { transform: scale(0.98); }
+
+  .btn-secondary {
+    display: inline-block;
+    padding: 12px 24px;
+    background: transparent;
+    color: #7A5FA0;
+    border: 2px solid #C9B8E8;
+    border-radius: 10px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.18s;
+    margin-top: 1rem;
+  }
+  .btn-secondary:hover { background: #F3EEFF; border-color: #9B7EC8; }
+
+  .error-msg { font-size: 12px; color: #C0396A; margin-top: 4px; display: none; }
+
+  .stage-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 1.25rem;
+  }
+  @media (max-width: 580px) { .stage-grid { grid-template-columns: 1fr; } }
+
+  .stage-card {
+    background: #fff;
+    border: 1.5px solid #E8DFF5;
+    border-radius: 16px;
+    padding: 1.25rem;
+    text-align: center;
+  }
+  .stage-card.highlight { border-color: #9B7EC8; background: #F8F4FF; }
+  .stage-badge {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #9B7EC8;
+    background: #EFE7FF;
+    border-radius: 20px;
+    padding: 3px 10px;
+    display: inline-block;
+    margin-bottom: 10px;
+  }
+  .stage-name {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    font-size: 13px;
+    color: #5B3A7E;
+    margin-bottom: 12px;
+  }
+  .stage-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    padding: 4px 0;
+    border-bottom: 1px solid #F0EAF9;
+  }
+  .stage-row:last-child { border-bottom: none; }
+  .stage-row-label { color: #9B7EC8; }
+  .stage-row-val { font-weight: 700; color: #5B3A7E; font-size: 13px; }
+  .stage-total {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 2px solid #D5C4F0;
+    text-align: center;
+  }
+  .stage-total-label { font-size: 11px; color: #9B7EC8; text-transform: uppercase; letter-spacing: 1px; }
+  .stage-total-mrr {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    font-size: 22px;
+    color: #5B3A7E;
+  }
+  .stage-annual { font-size: 12px; color: #7A5FA0; margin-top: 2px; }
+
+  .match-box {
+    background: #FFF2EE;
+    border: 1.5px solid #F5D5CB;
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.25rem;
+    font-size: 15px;
+    color: #5B3A7E;
+    line-height: 1.6;
+  }
+  .match-box strong { font-weight: 700; color: #5B3A7E; }
+
+  .score-section { margin-bottom: 1.5rem; }
+  .score-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .score-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 15px; color: #5B3A7E; }
+  .score-pct {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    font-size: 22px;
+    color: #9B7EC8;
+  }
+  .progress-track {
+    background: #E8DFF5;
+    border-radius: 50px;
+    height: 14px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 50px;
+    background: linear-gradient(90deg, #C9B8E8 0%, #9B7EC8 100%);
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .score-insight {
+    font-size: 14px;
+    color: #7A5FA0;
+    line-height: 1.65;
+    font-style: italic;
+  }
+
+  .rec-block {
+    border-radius: 16px;
+    padding: 1.75rem;
+    margin-bottom: 1.25rem;
+  }
+  .rec-block.high { background: #F3EEFF; border: 1.5px solid #C9B8E8; }
+  .rec-block.mid { background: #FFF2EE; border: 1.5px solid #F5D5CB; }
+  .rec-block.low { background: #F0FFF8; border: 1.5px solid #B8E8D2; }
+  .rec-headline {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    color: #5B3A7E;
+  }
+  .rec-body { font-size: 14px; line-height: 1.7; color: #5B3A7E; margin-bottom: 12px; }
+  .rec-action {
+    background: #fff;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #5B3A7E;
+    border: 1.5px solid #D5C4F0;
+    line-height: 1.6;
+  }
+  .rec-action strong { font-weight: 700; }
+
+  .cta-box {
+    background: linear-gradient(135deg, #5B3A7E 0%, #7A5FA0 100%);
+    border-radius: 16px;
+    padding: 1.75rem;
+    text-align: center;
+    margin-top: 1.5rem;
+  }
+  .cta-box p { color: #E8DFF5; font-size: 14px; margin-bottom: 12px; line-height: 1.6; }
+  .cta-btn {
+    display: inline-block;
+    padding: 14px 28px;
+    background: #fff;
+    color: #5B3A7E;
+    border-radius: 10px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    font-size: 14px;
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+  .cta-btn:hover { opacity: 0.88; }
+
+  .step-indicator {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 2rem;
+  }
+  .step-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #E8DFF5;
+    transition: background 0.3s;
+  }
+  .step-dot.active { background: #9B7EC8; }
+
+  .divider { border: none; border-top: 1.5px solid #EFE7FF; margin: 1.5rem 0; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="logo-bar">
+    <div class="eyebrow">Visibility by Design ✦</div>
+    <h1>Skool Revenue Model<br>Calculator ✨</h1>
+    <p class="subtitle">High-ticket vs. tiered membership — let your numbers decide.</p>
+  </div>
+
+  <div class="step-indicator">
+    <div class="step-dot active" id="dot1"></div>
+    <div class="step-dot" id="dot2"></div>
+    <div class="step-dot" id="dot3"></div>
+  </div>
+
+  <!-- SCREEN 1 -->
+  <div class="screen active" id="screen1">
+    <div class="card">
+      <h2>💼 Your Current Model</h2>
+      <p class="subtitle" style="margin-bottom:1.5rem;">Tell us about what you're working with right now.</p>
+
+      <div class="form-group">
+        <label>💰 Average client fee <span class="label-hint">(per client, in $)</span></label>
+        <input type="number" id="clientFee" placeholder="e.g. 7777" min="0">
+        <div class="error-msg" id="err-fee">Please enter a valid fee amount.</div>
+      </div>
+
+      <div class="form-group">
+        <label>👥 Active paying clients right now</label>
+        <input type="number" id="clientCount" placeholder="e.g. 4" min="0">
+        <div class="error-msg" id="err-count">Please enter the number of active clients.</div>
+      </div>
+
+      <div class="form-group">
+        <label>📞 Discovery calls per month <span class="label-hint">(to get those clients)</span></label>
+        <input type="number" id="discoveryCalls" placeholder="e.g. 8" min="0">
+        <div class="error-msg" id="err-calls">Please enter your monthly discovery calls.</div>
+      </div>
+
+      <div class="form-group">
+        <label>⏰ Hours/week on sales & marketing</label>
+        <div class="slider-row">
+          <input type="range" id="salesHours" min="0" max="20" value="8" step="1"
+            oninput="document.getElementById('salesHoursVal').textContent = this.value">
+          <span class="slider-val" id="salesHoursVal">8</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>🌡️ Current stress level</label>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="stress" value="1">
+            <span class="radio-label">😌 Sustainable</span>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="stress" value="2" checked>
+            <span class="radio-label">😤 It's a lot</span>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="stress" value="3">
+            <span class="radio-label">🔥 Burning out</span>
+          </label>
+        </div>
+      </div>
+
+      <button class="btn-primary" onclick="goToScreen2()">Calculate My Numbers →</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 2 -->
+  <div class="screen" id="screen2">
+    <div class="card">
+      <h2>📊 Your Skool Revenue Projections</h2>
+      <p class="subtitle" style="margin-bottom:1.5rem;">Here's what a tiered membership model could look like for you.</p>
+
+      <div class="stage-grid" id="stageGrid"></div>
+
+      <div class="match-box" id="matchBox"></div>
+
+      <hr class="divider">
+
+      <div class="score-section">
+        <div class="score-label-row">
+          <span class="score-title">✦ Model Alignment Score</span>
+          <span class="score-pct" id="scoreDisplay">0%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill" style="width:0%"></div>
+        </div>
+        <p class="score-insight" id="scoreInsight"></p>
+      </div>
+
+      <button class="btn-primary" onclick="goToScreen3()">What This Means For You →</button>
+    </div>
+    <button class="btn-secondary" onclick="goToScreen1()">← Back</button>
+  </div>
+
+  <!-- SCREEN 3 -->
+  <div class="screen" id="screen3">
+    <div class="card">
+      <h2>🔮 Your Next Step</h2>
+      <p class="subtitle" style="margin-bottom:1.5rem;">Based on your inputs, here's what the data — and your design — is pointing to.</p>
+
+      <div id="recBlock"></div>
+
+      <div class="cta-box">
+        <p>Ready to build this inside Skool? The entire Visibility by Design system — including live coaching and a community that gets you — is waiting. 🌟</p>
+        <a class="cta-btn" href="https://www.skool.com/amanda/about" target="_blank">Join Spiritual Business Skool for $8 →</a>
+      </div>
+    </div>
+
+    <div style="text-align:center; margin-top:1rem;">
+      <button class="btn-secondary" onclick="startOver()">↩ Start Over</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const fmt = (n) => '$' + Math.round(n).toLocaleString();
+
+function setStep(n) {
+  for (let i = 1; i <= 3; i++) {
+    document.getElementById('dot' + i).classList.toggle('active', i === n);
+  }
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen' + id).classList.add('active');
+  setStep(id);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function validate() {
+  let ok = true;
+  const fee = parseFloat(document.getElementById('clientFee').value);
+  const count = parseFloat(document.getElementById('clientCount').value);
+  const calls = parseFloat(document.getElementById('discoveryCalls').value);
+
+  const showErr = (id, show) => { document.getElementById(id).style.display = show ? 'block' : 'none'; };
+  const markInput = (id, err) => { document.getElementById(id).classList.toggle('error', err); };
+
+  if (!fee || fee < 0) { showErr('err-fee', true); markInput('clientFee', true); ok = false; }
+  else { showErr('err-fee', false); markInput('clientFee', false); }
+
+  if ((!count && count !== 0) || count < 0) { showErr('err-count', true); markInput('clientCount', true); ok = false; }
+  else { showErr('err-count', false); markInput('clientCount', false); }
+
+  if ((!calls && calls !== 0) || calls < 0) { showErr('err-calls', true); markInput('discoveryCalls', true); ok = false; }
+  else { showErr('err-calls', false); markInput('discoveryCalls', false); }
+
+  return ok;
+}
+
+function calcStage(standardCount, premiumPct, vipPct) {
+  const premium = Math.round(standardCount * premiumPct);
+  const vip = Math.round(standardCount * vipPct);
+  const stdMRR = standardCount * 8;
+  const premMRR = premium * 88;
+  const vipMRR = Math.round((vip * 444) / 12);
+  const totalMRR = stdMRR + premMRR + vipMRR;
+  const annualRev = totalMRR * 12;
+  return { standardCount, premium, vip, stdMRR, premMRR, vipMRR, totalMRR, annualRev };
+}
+
+function renderStageCard(s, label, name, isHL) {
+  return `
+    <div class="stage-card ${isHL ? 'highlight' : ''}">
+      <div class="stage-badge">${label}</div>
+      <div class="stage-name">${name}</div>
+      <div class="stage-row"><span class="stage-row-label">Standard (${s.standardCount})</span><span class="stage-row-val">${fmt(s.stdMRR)}</span></div>
+      <div class="stage-row"><span class="stage-row-label">Premium (${s.premium})</span><span class="stage-row-val">${fmt(s.premMRR)}</span></div>
+      <div class="stage-row"><span class="stage-row-label">VIP (${s.vip})</span><span class="stage-row-val">${fmt(s.vipMRR)}</span></div>
+      <div class="stage-total">
+        <div class="stage-total-label">Total MRR</div>
+        <div class="stage-total-mrr">${fmt(s.totalMRR)}</div>
+        <div class="stage-annual">~${fmt(s.annualRev)}/year</div>
+      </div>
+    </div>`;
+}
+
+function calcScore(calls, clients, salesHours, stress) {
+  let score = 0;
+  if (calls >= 10) score += 35;
+  else if (calls >= 5) score += 22;
+  else score += 8;
+  if (clients <= 3) score += 30;
+  else if (clients <= 7) score += 18;
+  else score += 5;
+  if (salesHours >= 12) score += 20;
+  else if (salesHours >= 6) score += 12;
+  else score += 3;
+  score += (stress - 1) * 7.5;
+  return Math.min(100, Math.round(score));
+}
+
+function goToScreen2() {
+  if (!validate()) return;
+  const fee = parseFloat(document.getElementById('clientFee').value);
+  const clients = parseFloat(document.getElementById('clientCount').value);
+  const calls = parseFloat(document.getElementById('discoveryCalls').value);
+  const salesHours = parseInt(document.getElementById('salesHours').value);
+  const stress = parseInt(document.querySelector('input[name="stress"]:checked').value);
+  const currentIncome = fee * clients;
+
+  const s1 = calcStage(100, 0.15, 0.05);
+  const s2 = calcStage(400, 0.20, 0.08);
+  const s3 = calcStage(862, 0.20, 0.10);
+
+  const blendedPerMember = 8 + 0.20 * 88 + 0.08 * (444 / 12);
+  const neededMembers = Math.ceil(currentIncome / blendedPerMember);
+
+  document.getElementById('stageGrid').innerHTML =
+    renderStageCard(s1, 'Stage 1', '🌱 Early Momentum', false)
+    + renderStageCard(s2, 'Stage 2', '🚀 Growing Community', true)
+    + renderStageCard(s3, 'Stage 3', '🌟 Momentum Stage', false);
+
+  document.getElementById('matchBox').innerHTML =
+    `To match your current income of <strong>${fmt(currentIncome)}/mo</strong>, you'd need approximately <strong>${neededMembers.toLocaleString()} Standard members</strong> — using a typical Stage 2 premium conversion mix. That's ${neededMembers <= 100 ? '✅ achievable in Stage 1' : neededMembers <= 400 ? '🚀 a Stage 2 goal' : '🌟 a Stage 3 play'}.`;
+
+  const score = calcScore(calls, clients, salesHours, stress);
+  window._score = score;
+  window._currentIncome = currentIncome;
+
+  document.getElementById('scoreDisplay').textContent = score + '%';
+  setTimeout(() => { document.getElementById('progressFill').style.width = score + '%'; }, 120);
+
+  let insight = '';
+  if (score >= 70) {
+    insight = 'Your numbers are pointing directly toward a membership model. The discovery call volume, time investment, and stress signals all suggest your current model has a ceiling — and your nervous system already knows it.';
+  } else if (score >= 40) {
+    insight = 'You\'re in a healthy hybrid zone. Your high-ticket model is working, but there\'s real opportunity to layer in recurring membership revenue — without dismantling what already converts.';
+  } else {
+    insight = 'Your current model is performing well and feels sustainable. A membership layer could diversify your income, but it isn\'t urgently necessary — optimize what\'s working first.';
+  }
+  document.getElementById('scoreInsight').textContent = insight;
+
+  showScreen(2);
+}
+
+function goToScreen3() {
+  const score = window._score || 50;
+
+  let block = '';
+  if (score >= 70) {
+    block = `
+      <div class="rec-block high">
+        <div class="rec-headline">💜 Your numbers — and your nervous system — are telling you something.</div>
+        <p class="rec-body">You're running hard to maintain this model. The discovery calls, the hours, the stress — it's not a discipline problem, it's a design problem. A tiered Skool membership lets you serve more people with less individual selling. Here's your invitation to explore the shift.</p>
+        <div class="rec-action"><strong>Your next step:</strong> Sketch out your 3-tier offer structure (Standard / Premium / VIP) and identify the one core transformation your community would pay $8/month to be inside of. Start building your Skool community free — before you flip to paid — so you arrive to ads with social proof already on the page.</div>
+      </div>`;
+  } else if (score >= 40) {
+    block = `
+      <div class="rec-block mid">
+        <div class="rec-headline">🌸 You're in the middle — and that's the perfect place to layer in recurring revenue.</div>
+        <p class="rec-body">You've built something that works. The question isn't whether to scrap your high-ticket offer — it's whether you can add a community tier that nurtures leads and creates a recurring base so you're not starting from zero every month. You can run both.</p>
+        <div class="rec-action"><strong>Your hybrid move:</strong> Launch a low-ticket Skool community ($8–$27/month) as a feeder into your high-ticket offers. Let the community do the warming. Your discovery calls become conversions from a warm audience instead of cold pitching.</div>
+      </div>`;
+  } else {
+    block = `
+      <div class="rec-block low">
+        <div class="rec-headline">✅ Your current model suits you. Here's how to optimize it without blowing it up.</div>
+        <p class="rec-body">Your high-ticket model is working and you're not burning out — that's rare. Rather than pivoting to membership, focus on systematizing what's already converting so it requires less of your time while earning the same (or more).</p>
+        <div class="rec-action"><strong>Your optimization play:</strong> Document your client acquisition flow, tighten your discovery call framework, and explore a small waitlist or "inner circle" add-on for existing clients. A Skool community can still serve you as a content hub and lead nurture space — just not as your primary revenue driver yet.</div>
+      </div>`;
+  }
+
+  document.getElementById('recBlock').innerHTML = block;
+  showScreen(3);
+}
+
+function goToScreen1() { showScreen(1); }
+
+function startOver() {
+  document.getElementById('clientFee').value = '';
+  document.getElementById('clientCount').value = '';
+  document.getElementById('discoveryCalls').value = '';
+  document.getElementById('salesHours').value = 8;
+  document.getElementById('salesHoursVal').textContent = '8';
+  document.querySelector('input[name="stress"][value="2"]').checked = true;
+  document.getElementById('progressFill').style.width = '0%';
+  showScreen(1);
+}
+</script>
+</body>
+</html>
